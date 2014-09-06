@@ -82,20 +82,38 @@ apache:
     modules:
         - rewrite
     vhosts:
-        hJzh72aDYPVj:
+        ezpublish53:
             servername: ezpublish.dev
             serveraliases:
-                - ezpublish.dev
-            docroot: /var/www/ezpublish
-            port: '80'
+                - admin.ezpublish.dev
+            docroot: /var/www/ezpublish/web
+            directoryindex: index.php
+            port: '8080'
             setenv:
-                - 'APP_ENV dev'
                 - 'ENVIRONMENT dev'
                 - 'USE_APC_CLASSLOADER 0'
                 - 'APC_CLASSLOADER_PREFIX "ezpublish"'
                 - 'USE_HTTP_CACHE 0'
                 - 'USE_DEBUGGING 1'
                 - 'TRUSTED_PROXIES "127.0.0.1"'
+            rewrites:
+                - {rewrite_rule: '^/api/[^/]+/v1/ /index_rest.php [L]'}
+                - {rewrite_rule: '^/var/([^/]+/)?storage/images(-versioned)?/.* - [L]'}
+                - {rewrite_rule: '^/var/([^/]+/)?cache/(texttoimage|public)/.* - [L]'}
+                - {rewrite_rule: '^/design/[^/]+/(stylesheets|images|javascript|fonts)/.* - [L]'}
+                - {rewrite_rule: '^/share/icons/.* - [L]'}
+                - {rewrite_rule: '^/extension/[^/]+/design/[^/]+/(stylesheets|fonts|flash|images|lib|javascripts?)/.* - [L]'}
+                - {rewrite_rule: '^/packages/styles/.+/(stylesheets|images|javascript)/[^/]+/.* - [L]'}
+                - {rewrite_rule: '^/packages/styles/.+/thumbnail/.* - [L]'}
+                - {rewrite_rule: '^/var/storage/packages/.* - [L]'}
+                - {rewrite_rule: '^/favicon\.ico - [L]'}
+                - {rewrite_rule: '^/robots\.txt - [L]'}
+                - {rewrite_rule: '^/w3c/p3p\.xml - [L]'}
+                - {rewrite_rule: '^/sitemap\.xml - [L]'}
+                - {rewrite_rule: '^/bundles/ - [L]'}
+                - {rewrite_rule: '^/css/.*\.css - [L]'}
+                - {rewrite_rule: '^/js/.*\.js - [L]'}
+                - {rewrite_rule: '.* /index.php'}
             override:
                 - None
             options:
@@ -201,7 +219,7 @@ mysql:
     root_password: root
     adminer: 0
     databases:
-        bvbP49SDXnHK:
+        ezpublish:
             grant:
                 - ALL
             name: ezpublish
@@ -268,4 +286,8 @@ elastic_search:
     settings:
         java_install: true
         autoupgrade: true
+varnish:
+    install: '1'
+    varnish_listen_port: 80,
+    varnish_storage_size: '1G'
 
