@@ -1,3 +1,6 @@
+/.bash_history
+/.mysql_history
 /ezpublish/*
 /default/*
+/dist/*
 /.vagrant
