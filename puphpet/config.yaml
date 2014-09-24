@@ -3,14 +3,14 @@ vagrantfile-local:
     vm:
         box: puphpet/debian75-x64
         box_url: puphpet/debian75-x64
-        hostname: 'ezpublish.dev'
+        hostname: ezpublish.dev
         memory: '3000'
         cpus: '1'
         chosen_provider: virtualbox
         network:
             private_network: 192.168.56.102
             forwarded_port:
-                OCXWTWxlrHtW:
+                GPVuupP85yAQ:
                     host: '5494'
                     guest: '22'
         post_up_message: ''
@@ -32,7 +32,17 @@ vagrantfile-local:
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            MKB7PUDaN0Ce:
+            9rhyvhnUiHIW:
+                source: ./dist
+                target: /var/dist
+                sync_type: default
+                rsync:
+                    args:
+                        - '--verbose'
+                        - '--archive'
+                        - '-z'
+                    auto: 'false'
+            Qn7Jg1M0cJio:
                 source: ./sites/ezpublish53
                 target: /var/www/sites/ezpublish53
                 sync_type: default
@@ -41,18 +51,16 @@ vagrantfile-local:
                         - '--verbose'
                         - '--archive'
                         - '-z'
-                    exclude:
                     auto: 'false'
-            hioa:
-                source: ./sites/hioa
-                target: /var/www/sites/hioa
+            k5gtpVrbO3mt:
+                source: ./sites/gunners
+                target: /var/www/sites/gunners
                 sync_type: default
                 rsync:
                     args:
                         - '--verbose'
                         - '--archive'
                         - '-z'
-                    exclude:
                     auto: 'false'
         usable_port_range:
             start: 10200
@@ -79,20 +87,24 @@ server:
         - zsh
 firewall:
     install: '1'
-    rules: null
+    rules:
+        JFPbmP7xdIcU:
+            priority: '100'
+            proto: tcp
+            action: accept
 apache:
     install: '1'
     settings:
         user: www-data
         group: www-data
-        default_vhost: false
+        default_vhost: true
         manage_user: false
         manage_group: false
         sendfile: 0
     modules:
         - rewrite
     vhosts:
-        ezpublish53:
+        zbZnx5Kp1ZL5:
             servername: ezpublish.dev
             serveraliases:
                 - admin.ezpublish.dev
@@ -101,7 +113,7 @@ apache:
             port: '8080'
             setenv:
                 - 'ENVIRONMENT dev'
-                - 'USE_APC_CLASSLOADER 0'
+                - 'USE_APC_CLASSLOADER 1'
                 - 'APC_CLASSLOADER_PREFIX "ezpublish"'
                 - 'USE_HTTP_CACHE 0'
                 - 'USE_DEBUGGING 1'
@@ -132,17 +144,17 @@ apache:
             ssl_key: ''
             ssl_chain: ''
             ssl_certs_dir: ''
-        hioa:
-            servername: hioa.dev
+        gkhA56eXLKqW:
+            servername: gunners.dev
             serveraliases:
-                - admin.hioa.dev
-            docroot: /var/www/sites/hioa/web
+                - admin.gunners.dev
+            docroot: /var/www/sites/gunners/web
             directoryindex: index.php
             port: '8080'
             setenv:
                 - 'ENVIRONMENT dev'
-                - 'USE_APC_CLASSLOADER 0'
-                - 'APC_CLASSLOADER_PREFIX "ezpublish"'
+                - 'USE_APC_CLASSLOADER 1'
+                - 'APC_CLASSLOADER_PREFIX "gunners"'
                 - 'USE_HTTP_CACHE 0'
                 - 'USE_DEBUGGING 1'
                 - 'TRUSTED_PROXIES "127.0.0.1"'
@@ -173,26 +185,13 @@ apache:
             ssl_chain: ''
             ssl_certs_dir: ''
     mod_pagespeed: 0
-mysql:
-    install: '1'
-    root_password: root
-    adminer: 0
-    databases:
-        ezpublish:
-            grant:
-                - ALL
-            name: ezpublish
-            host: localhost
-            user: ezpublish
-            password: ezpublish
-        hioa:
-            grant:
-                - ALL
-            name: hioa
-            host: localhost
-            user: hioa
-            password: hioa
-            sql_file: ./dist/hioa.sql
+nginx:
+    install: '0'
+    settings:
+        default_vhost: 1
+        proxy_buffer_size: 128k
+        proxy_buffers: '4 256k'
+    vhosts: {  }
 php:
     install: '1'
     version: '54'
@@ -201,28 +200,47 @@ php:
     modules:
         php:
             - cli
-            - intl
-            - mcrypt
             - curl
             - gd
             - imagick
+            - intl
             - mbstring
+            - mcrypt
             - mysql
             - xsl
         pear:
             - Crypt_GPG
         pecl:
             - pecl_http
+            - APC
+            - varnish
+            - imagick
+            - APM
     ini:
         display_errors: On
         error_reporting: '-1'
         session.save_path: /var/lib/php/session
+        apc.shm_segments: '1'
+        apc.shm_size: 512M
+        realpath_cache_size: 4096k
+        apc.stat: '1'
+        apc.max_file_size: 4M
+        apc.ttl: '7200'
+        apc.user_ttl: '7200'
+        apc.gc_ttl: '3600'
+        apc.enabled: '1'
     timezone: Europe/Oslo
     mod_php: '1'
-varnish:
+hhvm:
     install: '0'
-    varnish_listen_port: '80'
-    varnish_storage_size: '1G'
+    nightly: 0
+    composer: '1'
+    composer_home: ''
+    settings:
+        host: '0'
+        port: '0'
+    ini: {  }
+    timezone: null
 xdebug:
     install: '0'
     settings:
@@ -232,10 +250,15 @@ xdebug:
         xdebug.remote_enable: '1'
         xdebug.remote_handler: dbgp
         xdebug.remote_port: '9000'
+xhprof:
+    install: '0'
+drush:
+    install: '0'
+    version: ''
 ruby:
     install: '1'
     versions:
-        PyYzmum73crk:
+        v5wSZzHnhI8C:
             version: ''
 nodejs:
     install: '0'
@@ -244,8 +267,57 @@ python:
     install: '1'
     packages: {  }
     versions:
-        Szt9U9bS1GHY:
+        ezkVFbT3SVfm:
             version: ''
+mysql:
+    install: '1'
+    root_password: root
+    adminer: 0
+    databases:
+        EZCBM04ShBed:
+            grant:
+                - ALL
+            name: ezpublish
+            host: localhost
+            user: ezpublish
+            password: ezpublish
+            sql_file: ''
+        y0D8iCMmDe3o:
+            grant:
+                - ALL
+            name: gunners
+            host: localhost
+            user: gunners
+            password: gunners
+            #sql_file: '/home/vagrant/dist/gunners.sql'
+postgresql:
+    install: '0'
+    settings:
+        root_password: '123'
+        user_group: postgres
+        encoding: UTF8
+        version: '9.3'
+    databases: {  }
+    adminer: 0
+mariadb:
+    install: '0'
+    root_password: '123'
+    adminer: 0
+    databases: {  }
+sqlite:
+    install: '0'
+    adminer: 0
+    databases: {  }
+mongodb:
+    install: '0'
+    settings:
+        auth: 1
+        port: '27017'
+    databases: {  }
+redis:
+    install: '0'
+    settings:
+        conf_port: '6379'
 mailcatcher:
     install: '0'
     settings:
@@ -255,8 +327,24 @@ mailcatcher:
         http_port: '1080'
         mailcatcher_path: /usr/local/rvm/wrappers/default
         from_email_method: inline
-elastic_search:
+beanstalkd:
     install: '0'
+    settings:
+        listenaddress: 0.0.0.0
+        listenport: '13000'
+        maxjobsize: '65535'
+        maxconnections: '1024'
+        binlogdir: /var/lib/beanstalkd/binlog
+        binlogfsync: null
+        binlogsize: '10485760'
+    beanstalk_console: 0
+    binlogdir: /var/lib/beanstalkd/binlog
+rabbitmq:
+    install: '0'
+    settings:
+        port: '5672'
+elastic_search:
+    install: '1'
     settings:
         java_install: true
         autoupgrade: true

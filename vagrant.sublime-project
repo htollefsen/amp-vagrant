@@ -1,0 +1,21 @@
+{
+    "folders":
+    [
+        {
+            "folder_exclude_patterns": [ "sites", ".*" ],
+            "file_exclude_patterns": [ "*DS_Store*", "nohup.out", "._*", "*~", ".viminfo", ".gitattributes", ".bash_history" , "*.sublime-workspace" ],
+            "path": "/Users/harald/Sites/ezpublish-vagrant"
+        }
+    ],
+    "settings":
+    {
+        "tab_size": 4
+    },
+    "build_systems":
+    [
+        {
+            "name": "List",
+            "cmd": ["ls"]
+        }
+    ]
+}

@@ -1,8 +1,9 @@
+*.box
 /sites
 /.composer
 /.viminfo
 /.gitattributes
-/ezpublish-vagrant.sublime-workspace
+*.sublime-workspace
 /.bash_history
 /.mysql_history
 /ezpublish/*
